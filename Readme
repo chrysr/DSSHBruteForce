@@ -1,0 +1,91 @@
+Distributed SSH BruteForce 
+
+******************************************************************************
+Requirements (server.py):
+-python-twisted
+		$ sudo apt install python-twisted
+
+-Open SSL
+		$ sudo pip install pyopenssl
+
+
+Requirements (client.py):
+-python-twisted
+		$ sudo apt install python-twisted
+
+-Open SSL
+		$ sudo pip install pyopenssl
+
+-Python paramiko
+		$ pip install paramiko
+*******************************************************************************
+
+SERVER-side:
+-Needs "server.pem" file (One is already provided)
+-Needs "credentials.txt" in the following format: UserName:Password (This files contains the credentials with which we will try to brute force. In other words, our dictionary)
+-Needs "ips.txt" where only one IP appears on each line (This file contains the Target IPs)
+-Needs "proxies.txt" in the following format: IP:Port (This file contains the Proxy servers the program will use)
+-Writes results in "result.txt" in the following format: UserName:Password:IP (This file contains correct user credentials)
+
+
+CLIENT-side:
+-Creates "ips.txt" file where it stores Target-IPs (These IPs are transfered from the Server to the Client)
+
+================================================================================================================================================================================
+The core idea of this project is the following: There is one server that coordinates a number of clients. These clients attack the specified targets using their IP and a number of proxies to alternate between IPs, in order to prevent IP banning. 
+
+
+***See picture attached in directory***
+=================================================================================================================================================================================
+
+
+
+
+
+Usage:
+-server.py
+	-i interface  		(Specify interface. Default is 127.0.0.1. If you are running on local network, this should be your local ip address)
+	-p port				(Specify the port to listen for incoming connections. Default is 46001)
+	-P file.pem			(Specify different location for .pem file. Default is current directory)
+Examples:
+  $python server.py -i server-ip 
+  $python server.py -i server-ip -p 5402 
+
+
+-client.py
+	-s server			(Specify the server to connect to)
+	-p port				(Specify the port to connect to on the server. Default is 46001)
+Examples:
+  $python client.py -s server-ip 
+  $python client.py -s server-ip -p 5402
+
+
+1)First, start up the server.py. This will load up the Target IPs from "ips.txt" to memory. You can also edit the code to use nmap for additional targets (The code for that is commented out)
+2)When the server prints out "Ready..." you can start the client side.
+3)The client will initially download some required data from the server (like the "ips.txt") and then will start attacking.
+4)The server sends 3 combinations of usernames and passwords at a time to the client and each combination is tried out on all of the targets.
+5)The client reports any findings to the server and asks for more username/password combination and requests a proxy to use to change its IP.
+6)This repeats until the server runs out of username/password combinations. 
+7) There can be more than one clients running at the same time.
+
+Also Implemented:
+-nmap scanning
+-check if proxy is running correctly and if not, retry with different one. (We need an HTTP Proxy here)
+-sub-program that takes two files as input, one with user names and one with passwords, and outputs all of their combinations in a different, third file. 
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
